@@ -69,6 +69,12 @@ describe "ExcerptFu" do
         snippet.search("in the middle", :prefix => 12, :suffix => 21, :words => true).should == "substring in the middle for testing purposes"
       end
     end
+
+    it "should return the same text when suffix not exist" do
+      text = "default description"
+      snippet = ExcerptFu.new(text)
+      snippet.search("description", :prefix => 200, :suffix => 200, :words => true).should == text
+    end
   end
 
   describe "Unit Specs" do

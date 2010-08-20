@@ -90,7 +90,7 @@ class ExcerptFu < String
     end
 
     def suffix_str
-      self.split(substring)[1]
+      self.split(substring)[1] || ""
     end
 
 end
