@@ -46,7 +46,7 @@ describe "ExcerptFu" do
       it "should split the snippet 'in half' and use desired number of characters around that" do
         text = "An example string with substring in half for testing purposes"
         snippet = ExcerptFu.new(text)
-        snippet.search("in the middle", :prefix => 10, :suffix => 10).should == "th substring in half "
+        snippet.search("in the middle", :prefix => 10, :suffix => 10).should == "th substring in half"
       end
     end
 
@@ -74,6 +74,12 @@ describe "ExcerptFu" do
       text = "default description"
       snippet = ExcerptFu.new(text)
       snippet.search("description", :prefix => 200, :suffix => 200, :words => true).should == text
+    end
+
+    it "should return the same text when search substring not exist" do
+      text = "default description"
+      snippet = ExcerptFu.new(text)
+      snippet.search("not existing", :prefix => 200, :suffix => 200, :words => true).should == text
     end
   end
 
@@ -252,6 +258,14 @@ describe "ExcerptFu" do
     it "suffix_str should return suffix string from main string" do
       @text_snippet.should_receive(:substring).and_return('middle')
       @text_snippet.send(:suffix_str).should == ' suffix'
+    end
+
+    'prefix middle suffix'
+
+    it "middle_substring should return middle of the string" do
+      @text_snippet.should_receive(:prefix_size).and_return(3)
+      @text_snippet.should_receive(:suffix_size).and_return(3)
+      @text_snippet.send(:middle_substring).should == 'middle'
     end
 
   end

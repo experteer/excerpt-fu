@@ -13,7 +13,7 @@ class ExcerptFu < String
     if self.include?(substring)
       [ prefix, substring, suffix ].join
     else
-      self[size/2-prefix_size..size/2+suffix_size]
+      middle_substring
     end
   end
 
@@ -91,6 +91,12 @@ class ExcerptFu < String
 
     def suffix_str
       self.split(substring)[1] || ""
+    end
+
+    def middle_substring
+      from = [size/2-prefix_size, 0].max
+      to = size/2+suffix_size
+      self[from..to].rstrip
     end
 
 end
