@@ -7,9 +7,9 @@ begin
     gem.name = "excerpt-fu"
     gem.summary = %Q{TODO: one-line summary of your gem}
     gem.description = %Q{TODO: longer description of your gem}
-    gem.email = "h13ronim@gmail.com"
+    gem.email = "dev@doubledrones.com"
     gem.homepage = "http://github.com/doubledrones/excerpt-fu"
-    gem.authors = ["Marcin Michalowski"]
+    gem.authors = ["Marcin Michalowski", "Marcin Nowicki"]
     gem.add_development_dependency "rspec", ">= 1.2.9"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
