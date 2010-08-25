@@ -5,8 +5,8 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "excerpt-fu"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.summary = %Q{Enchanced version for excerpt rails helper with whole word support}
+    gem.description = %Q{Enchanced version for excerpt rails helper with whole word support}
     gem.email = "dev@doubledrones.com"
     gem.homepage = "http://github.com/doubledrones/excerpt-fu"
     gem.authors = ["Marcin Michalowski", "Marcin Nowicki"]
