@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.authors = ["Marcin Michalowski", "Marcin Nowicki"]
   s.date = %q{2010-08-20}
   s.description = %q{Enchanced version for excerpt rails helper with whole word support}
-  s.email = %q{dev@doubledrones.com}
+  
   s.extra_rdoc_files = [
     "LICENSE",
      "README.rdoc"
@@ -28,7 +28,7 @@ Gem::Specification.new do |s|
      "spec/spec.opts",
      "spec/spec_helper.rb"
   ]
-  s.homepage = %q{http://github.com/doubledrones/excerpt-fu}
+  s.homepage = %q{http://github.com/experteer/excerpt-fu}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.6}

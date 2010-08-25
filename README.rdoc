@@ -14,4 +14,4 @@ Description goes here.
 
 == Copyright
 
-Copyright (c) 2010 Marcin Michalowski, Marcin Nowicki. See LICENSE for details.
+Copyright (c) 2010 Experteer GmbH. See LICENSE for details.

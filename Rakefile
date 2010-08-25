@@ -7,8 +7,7 @@ begin
     gem.name = "excerpt-fu"
     gem.summary = %Q{Enchanced version for excerpt rails helper with whole word support}
     gem.description = %Q{Enchanced version for excerpt rails helper with whole word support}
-    gem.email = "dev@doubledrones.com"
-    gem.homepage = "http://github.com/doubledrones/excerpt-fu"
+    gem.homepage = "http://github.com/experteer/excerpt-fu"
     gem.authors = ["Marcin Michalowski", "Marcin Nowicki"]
     gem.add_development_dependency "rspec", ">= 1.2.9"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
