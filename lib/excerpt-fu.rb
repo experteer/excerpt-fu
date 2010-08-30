@@ -1,6 +1,6 @@
 class ExcerptFu < String
 
-  attr_accessor :substring, :prefix_size, :suffix_size, :full_words
+  attr_accessor :substring, :prefix_size, :suffix_size, :full_words, :limit
 
   def self.search(text, substring, options = {})
     new(text).search(substring, options)
@@ -32,7 +32,11 @@ class ExcerptFu < String
     end
 
     def prefix_raw
-      prefix_str[prefix_start..-1]
+      if limit
+        prefix_str[prefix_start+substring.size/2..-1]
+      else
+        prefix_str[prefix_start..-1]
+      end
     end
 
     def suffix
@@ -48,13 +52,22 @@ class ExcerptFu < String
     end
 
     def suffix_raw
-      suffix_str[0..suffix_end]
+      if limit
+        suffix_str[0..suffix_end-substring.size/2]
+      else
+        suffix_str[0..suffix_end]
+      end
     end
 
     def extract_options(options)
-      @prefix_size = options[:prefix]
-      @suffix_size = options[:suffix]
+      @prefix_size = half_of_limit(options) || options[:prefix]
+      @suffix_size = half_of_limit(options) || options[:suffix]
       @full_words = options[:words]
+      @limit = options[:limit]
+    end
+
+    def half_of_limit(options)
+      options[:limit] / 2 if options[:limit]
     end
 
     def prefix_start_raw

@@ -81,6 +81,21 @@ describe "ExcerptFu" do
       snippet = ExcerptFu.new(text)
       snippet.search("not existing", :prefix => 200, :suffix => 200, :words => true).should == text
     end
+
+    it "should return no more than characters number specified as limit" do
+      text = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, SUBSTRING Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. function_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendisse eu tortor. Donec vitae city_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis
+|| se eu tortor. Donec vitae felis nec ligula blandit rhoncus."
+      snippet = ExcerptFu.new(text)
+      snippet.search("SUBSTRING", :limit => 200, :words => true).size.should <= 200
+    end
+
+    it "should return proper string when set limit" do
+      text = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, SUBSTRING Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. function_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendisse eu tortor. Donec vitae city_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis
+|| se eu tortor. Donec vitae felis nec ligula blandit rhoncus."
+      snippet = ExcerptFu.new(text)
+      snippet.search("SUBSTRING", :limit => 200, :words => true).should == ". Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, SUBSTRING Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem"
+    end
+
   end
 
   describe "Unit Specs" do
@@ -139,10 +154,20 @@ describe "ExcerptFu" do
       end
     end
 
-    it "prefix_raw should return range of prefix string from prefix_start marker to end" do
-      @text_snippet.should_receive(:prefix_start).and_return(2)
-      @text_snippet.should_receive(:prefix_str).and_return(" test")
-      @text_snippet.send(:prefix_raw).should == "est"
+    describe "prefix_raw" do
+      it "should return range of prefix string from prefix_start marker to end" do
+        @text_snippet.should_receive(:prefix_start).and_return(2)
+        @text_snippet.should_receive(:prefix_str).and_return(" test")
+        @text_snippet.send(:prefix_raw).should == "est"
+      end
+
+      it "should return range of prefix string from prefix_start marker minus half size of substring to end when limit set" do
+        @text_snippet.should_receive(:prefix_start).and_return(2)
+        @text_snippet.should_receive(:prefix_str).and_return(" test")
+        @text_snippet.should_receive(:limit).and_return(1)
+        @text_snippet.should_receive(:substring).and_return('aa')
+        @text_snippet.send(:prefix_raw).should == "st"
+      end
     end
 
     describe "suffix" do
@@ -193,17 +218,53 @@ describe "ExcerptFu" do
       end
     end
 
-    it "suffix_raw should return range of suffix string from suffix_start marker to end" do
-      @text_snippet.should_receive(:suffix_end).and_return(2)
-      @text_snippet.should_receive(:suffix_str).and_return(" test")
-      @text_snippet.send(:suffix_raw).should == " te"
+    describe "suffix_raw" do
+      it "should return range of suffix string from suffix_start marker to end" do
+        @text_snippet.should_receive(:suffix_end).and_return(2)
+        @text_snippet.should_receive(:suffix_str).and_return(" test")
+        @text_snippet.send(:suffix_raw).should == " te"
+      end
+
+      it "should return range of suffix string from suffix_start marker to end minus half size of substring when limit set" do
+        @text_snippet.should_receive(:suffix_end).and_return(2)
+        @text_snippet.should_receive(:suffix_str).and_return(" test")
+        @text_snippet.should_receive(:limit).and_return(1)
+        @text_snippet.should_receive(:substring).and_return('aa')
+        @text_snippet.send(:suffix_raw).should == " t"
+      end
     end
 
-    it "extract_options should set proper attributes" do
-      @text_snippet.send(:extract_options, {:prefix => 'prefix', :suffix => 'suffix', :words => 'words'})
-      @text_snippet.prefix_size.should == 'prefix'
-      @text_snippet.suffix_size.should == 'suffix'
-      @text_snippet.full_words.should == 'words'
+    describe "extract_options" do
+      it "should set proper attributes" do
+        @text_snippet.send(:extract_options, {
+          :prefix => 'prefix',
+          :suffix => 'suffix',
+          :words => 'words'
+        })
+        @text_snippet.prefix_size.should == 'prefix'
+        @text_snippet.suffix_size.should == 'suffix'
+        @text_snippet.full_words.should == 'words'
+      end
+
+      it "should set half of limit value for prefix and suffix when limit defined" do
+        @text_snippet.should_receive(:half_of_limit).with(:limit => 'limit').twice.and_return('half_of_limit')
+        @text_snippet.send(:extract_options, {
+          :limit => 'limit'
+        })
+        @text_snippet.prefix_size.should == 'half_of_limit'
+        @text_snippet.suffix_size.should == 'half_of_limit'
+        @text_snippet.limit.should == 'limit'
+      end
+    end
+
+    describe "half_of_limit" do
+      it "should return half of limit when limit exist" do
+        @text_snippet.send(:half_of_limit, :limit => 10).should == 5
+      end
+
+      it "should return nil when limit does not exist" do
+        @text_snippet.send(:half_of_limit, {}).should be_nil
+      end
     end
 
     it "prefix_start_raw should return difference between size of prefix string and prefix size from parameters" do
