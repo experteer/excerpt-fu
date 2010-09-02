@@ -96,6 +96,29 @@ describe "ExcerptFu" do
       snippet.search("SUBSTRING", :limit => 200, :words => true).should == ". Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, SUBSTRING Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem"
     end
 
+    it "should return proper string when set limit with SUBSTRING at beginning of text" do
+      text = "SUBSTRING Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu,  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. function_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendisse eu tortor. Donec vitae city_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis se eu tortor. Donec vitae felis nec ligula blandit rhoncus."
+      snippet = ExcerptFu.new(text)
+      snippet.search("SUBSTRING", :limit => 200, :words => true).should == "SUBSTRING Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu,"
+    end
+
+    it "should return proper string when set limit with SUBSTRING at end of text" do
+      text = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu,  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. function_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendisse eu tortor. Donec vitae city_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis se eu tortor. Donec vitae felis nec ligula blandit rhoncus. SUBSTRING"
+      snippet = ExcerptFu.new(text)
+      snippet.search("SUBSTRING", :limit => 200, :words => true).should == "sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis se eu tortor. Donec vitae felis nec ligula blandit rhoncus. SUBSTRING"
+    end
+
+    it "should return proper string when set limit with SUBSTRING is near the beginning" do
+      text = "Lorem ipsum dolor sit SUBSTRING amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu,  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. function_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendisse eu tortor. Donec vitae city_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis se eu tortor. Donec vitae felis nec ligula blandit rhoncus."
+      snippet = ExcerptFu.new(text)
+      snippet.search("SUBSTRING", :limit => 200, :words => true).should == "Lorem ipsum dolor sit SUBSTRING amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu,"
+    end
+
+    it "should return proper string when set limit with SUBSTRING is near the end" do
+      text = "Lorem ipsum dolor sit  amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu,  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. function_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendisse eu tortor. Donec vitae city_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis se eu tortor. Donec SUBSTRING vitae felis nec ligula blandit rhoncus."
+      snippet = ExcerptFu.new(text)
+      snippet.search("SUBSTRING", :limit => 200, :words => true).should == "sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis se eu tortor. Donec SUBSTRING vitae felis nec ligula blandit rhoncus."
+    end
   end
 
   describe "Unit Specs" do
@@ -163,7 +186,8 @@ describe "ExcerptFu" do
 
       it "should return range of prefix string from prefix_start marker minus half size of substring to end when limit set" do
         @text_snippet.should_receive(:prefix_start).and_return(2)
-        @text_snippet.should_receive(:prefix_str).and_return(" test")
+        @text_snippet.should_receive(:prefix_str).twice.and_return(" test")
+        @text_snippet.should_receive(:prefix_size).and_return(4)
         @text_snippet.should_receive(:limit).and_return(1)
         @text_snippet.should_receive(:substring).and_return('aa')
         @text_snippet.send(:prefix_raw).should == "st"

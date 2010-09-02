@@ -32,7 +32,7 @@ class ExcerptFu < String
     end
 
     def prefix_raw
-      if limit
+      if limit && prefix_str.size > prefix_size
         prefix_str[prefix_start+substring.size/2..-1]
       else
         prefix_str[prefix_start..-1]
