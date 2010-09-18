@@ -46,7 +46,7 @@ describe "ExcerptFu" do
       it "should split the snippet 'in half' and use desired number of characters around that" do
         text = "An example string with substring in half for testing purposes"
         snippet = ExcerptFu.new(text)
-        snippet.search("in the middle", :prefix => 10, :suffix => 10).should == "th substring in half"
+        snippet.search("in the middle", :prefix => 10, :suffix => 10).should == "h substring in half "
       end
     end
 
@@ -118,6 +118,12 @@ describe "ExcerptFu" do
       text = "Lorem ipsum dolor sit  amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu,  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. function_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendisse eu tortor. Donec vitae city_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis se eu tortor. Donec SUBSTRING vitae felis nec ligula blandit rhoncus."
       snippet = ExcerptFu.new(text)
       snippet.search("SUBSTRING", :limit => 200, :words => true).should == "sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis se eu tortor. Donec SUBSTRING vitae felis nec ligula blandit rhoncus."
+    end
+
+    it "should return proper string when full words requested and SUBSTRING does not exist" do
+      text = "Lorem ipsum dolor sit  amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu,  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. function_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendisse eu tortor. Donec vitae city_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis se eu tortor. Donec vitae felis nec ligula blandit rhoncus."
+      snippet = ExcerptFu.new(text)
+      snippet.search("SUBSTRING", :limit => 200, :words => true).should == "magna. function_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus"
     end
   end
 
@@ -335,24 +341,37 @@ describe "ExcerptFu" do
       end
     end
 
-    it "prefix_str should return prefix string from main string" do
+    describe "prefix_str" do
+      it "should return prefix string from main string" do
+        @text_snippet.should_receive(:include_substring?).and_return(true)
+        @text_snippet.should_receive(:substring).and_return('middle')
+        @text_snippet.send(:prefix_str).should == 'prefix '
+      end
+
+      it "should return first half of string when string does not contain substring" do
+        @text_snippet.should_receive(:include_substring?).and_return(false)
+        @text_snippet.send(:prefix_str).should == 'prefix midd'
+      end
+    end
+
+    describe "suffix_str" do
+      it "should return suffix string from main string" do
+        @text_snippet.should_receive(:include_substring?).and_return(true)
+        @text_snippet.should_receive(:substring).and_return('middle')
+        @text_snippet.send(:suffix_str).should == ' suffix'
+      end
+
+      it "should return first half of string when string does not contain substring" do
+        @text_snippet.should_receive(:include_substring?).and_return(false)
+        @text_snippet.send(:prefix_str).should == 'prefix midd'
+      end
+    end
+
+    it "include_substring? should check that self include substring" do
       @text_snippet.should_receive(:substring).and_return('middle')
-      @text_snippet.send(:prefix_str).should == 'prefix '
+      @text_snippet.should_receive(:include?).with('middle').and_return('check')
+      @text_snippet.send(:include_substring?).should == 'check'
     end
-
-    it "suffix_str should return suffix string from main string" do
-      @text_snippet.should_receive(:substring).and_return('middle')
-      @text_snippet.send(:suffix_str).should == ' suffix'
-    end
-
-    'prefix middle suffix'
-
-    it "middle_substring should return middle of the string" do
-      @text_snippet.should_receive(:prefix_size).and_return(3)
-      @text_snippet.should_receive(:suffix_size).and_return(3)
-      @text_snippet.send(:middle_substring).should == 'middle'
-    end
-
   end
 
 end

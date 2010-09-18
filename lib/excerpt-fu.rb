@@ -10,18 +10,22 @@ class ExcerptFu < String
     @substring = substring
     extract_options(options)
 
-    if self.include?(substring)
+    if include_substring?
       [ prefix, substring, suffix ].join
     else
-      middle_substring
+      [ prefix, suffix ].join
     end
   end
 
   private
 
+    def include_substring?
+      self.include?(substring)
+    end
+
     def prefix
       if full_words && prefix_first_word_incomplete?
-        prefix_raw.gsub(/^(\w+.?){1}/, "")
+        prefix_raw.gsub(/^(\w+.?){1}/, "").lstrip
       else
         prefix_raw
       end
@@ -99,17 +103,19 @@ class ExcerptFu < String
     end
 
     def prefix_str
-      self.split(substring)[0]
+      if include_substring?
+        self.split(substring)[0]
+      else
+        self[0..size/2]
+      end
     end
 
     def suffix_str
-      self.split(substring)[1] || ""
-    end
-
-    def middle_substring
-      from = [size/2-prefix_size, 0].max
-      to = size/2+suffix_size
-      self[from..to].rstrip
+      if include_substring?
+        self.split(substring)[1] || ""
+      else
+        self[size/2+1..-1]
+      end
     end
 
 end
