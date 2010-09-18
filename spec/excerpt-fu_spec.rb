@@ -123,7 +123,7 @@ describe "ExcerptFu" do
     it "should return proper string when full words requested and SUBSTRING does not exist" do
       text = "Lorem ipsum dolor sit  amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu,  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. function_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendisse eu tortor. Donec vitae city_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis se eu tortor. Donec vitae felis nec ligula blandit rhoncus."
       snippet = ExcerptFu.new(text)
-      snippet.search("SUBSTRING", :limit => 200, :words => true).should == "magna. function_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus"
+      snippet.search("SUBSTRING", :limit => 200, :words => true).should == "magna. function_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus,"
     end
   end
 
@@ -367,10 +367,17 @@ describe "ExcerptFu" do
       end
     end
 
-    it "include_substring? should check that self include substring" do
-      @text_snippet.should_receive(:substring).and_return('middle')
-      @text_snippet.should_receive(:include?).with('middle').and_return('check')
-      @text_snippet.send(:include_substring?).should == 'check'
+    describe "include_substring?" do
+      it "should check that substring is not empty and self include substring" do
+        @text_snippet.should_receive(:substring).twice.and_return('middle')
+        @text_snippet.should_receive(:include?).with('middle').and_return('check')
+        @text_snippet.send(:include_substring?).should == 'check'
+      end
+
+      it "should be false when substring is empty" do
+        @text_snippet.should_receive(:substring).and_return('')
+        @text_snippet.send(:include_substring?).should be_false
+      end
     end
   end
 

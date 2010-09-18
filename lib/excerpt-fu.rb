@@ -13,6 +13,7 @@ class ExcerptFu < String
     if include_substring?
       [ prefix, substring, suffix ].join
     else
+      @substring = ''
       [ prefix, suffix ].join
     end
   end
@@ -20,7 +21,7 @@ class ExcerptFu < String
   private
 
     def include_substring?
-      self.include?(substring)
+      !substring.empty? && self.include?(substring)
     end
 
     def prefix
