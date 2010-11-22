@@ -3,18 +3,17 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 describe "ExcerptFu" do
 
   describe "Behavioral Specs" do
-
     it "should show desired number of characters altogether and place the matched substring 'in the middle'" do
       text = "An example string with substring in the middle for testing purposes"
       snippet = ExcerptFu.new(text)
-      snippet.search("in the middle", :prefix => 6, :suffix => 6).should == "tring in the middle for t"
+      snippet.search("in the middle", :prefix => 6, :suffix => 6).should == "...tring in the middle for t..."
     end
 
     describe "when many substrings 'in the middle'" do
       it "should show desired number of characters altogether and place around first occurence of the matched substring 'in the middle'" do
         text = "An example string with substring in the middle for testing purposes with another in the middle substring"
         snippet = ExcerptFu.new(text)
-        snippet.search("in the middle", :prefix => 6, :suffix => 6).should == "tring in the middle for t"
+        snippet.search("in the middle", :prefix => 6, :suffix => 6).should == "...tring in the middle for t..."
       end
     end
 
@@ -22,7 +21,7 @@ describe "ExcerptFu" do
       it "should fill the snippet with characters from 'after' the match" do
         text = "Insufficent in the middle prefix for testing purposes with another in the middle substring"
         snippet = ExcerptFu.new(text)
-        snippet.search("in the middle", :prefix => 14, :suffix => 6).should == "Insufficent in the middle prefix "
+        snippet.search("in the middle", :prefix => 14, :suffix => 6).should == "Insufficent in the middle prefix ..."
       end
     end
 
@@ -30,7 +29,7 @@ describe "ExcerptFu" do
       it "should fill the snippet with characters from 'before' the match" do
         text = "An example string with substring in the middle for testing"
         snippet = ExcerptFu.new(text)
-        snippet.search("in the middle", :prefix => 6, :suffix => 14).should == "bstring in the middle for testing"
+        snippet.search("in the middle", :prefix => 6, :suffix => 14).should == "...bstring in the middle for testing"
       end
     end
 
@@ -46,7 +45,7 @@ describe "ExcerptFu" do
       it "should split the snippet 'in half' and use desired number of characters around that" do
         text = "An example string with substring in half for testing purposes"
         snippet = ExcerptFu.new(text)
-        snippet.search("in the middle", :prefix => 10, :suffix => 10).should == "h substring in half "
+        snippet.search("in the middle", :prefix => 10, :suffix => 10).should == "...h substring in half ..."
       end
     end
 
@@ -54,19 +53,19 @@ describe "ExcerptFu" do
       it "should remove that words at start and end of the substring" do
         text = "An example string with substring in the middle for testing purposes"
         snippet = ExcerptFu.new(text)
-        snippet.search("in the middle", :prefix => 12, :suffix => 10, :words => true).should == "substring in the middle for"
+        snippet.search("in the middle", :prefix => 12, :suffix => 10, :words => true).should == "...substring in the middle for..."
       end
 
       it "should do nothing to prefix when prefix is not cutted" do
         text = "An example string with substring in the middle for testing purposes"
         snippet = ExcerptFu.new(text)
-        snippet.search("in the middle", :prefix => 33, :suffix => 10, :words => true).should == "An example string with substring in the middle for"
+        snippet.search("in the middle", :prefix => 33, :suffix => 10, :words => true).should == "An example string with substring in the middle for..."
       end
 
       it "should do nothing to suffix when suffix is not cutted" do
         text = "An example string with substring in the middle for testing purposes"
         snippet = ExcerptFu.new(text)
-        snippet.search("in the middle", :prefix => 12, :suffix => 21, :words => true).should == "substring in the middle for testing purposes"
+        snippet.search("in the middle", :prefix => 12, :suffix => 21, :words => true).should == "...substring in the middle for testing purposes"
       end
     end
 
@@ -86,44 +85,43 @@ describe "ExcerptFu" do
       text = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, SUBSTRING Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. function_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendisse eu tortor. Donec vitae city_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis
 || se eu tortor. Donec vitae felis nec ligula blandit rhoncus."
       snippet = ExcerptFu.new(text)
-      snippet.search("SUBSTRING", :limit => 200, :words => true).size.should <= 200
+      snippet.search("SUBSTRING", :limit => 200, :words => true, :omission => '').size.should <= 200
     end
 
     it "should return proper string when set limit" do
       text = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, SUBSTRING Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. function_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendisse eu tortor. Donec vitae city_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis
 || se eu tortor. Donec vitae felis nec ligula blandit rhoncus."
       snippet = ExcerptFu.new(text)
-      snippet.search("SUBSTRING", :limit => 200, :words => true).should == ". Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, SUBSTRING Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem"
+      snippet.search("SUBSTRING", :limit => 200, :words => true).should == ".... Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, SUBSTRING Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem..."
     end
 
     it "should return proper string when set limit with SUBSTRING at beginning of text" do
       text = "SUBSTRING Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu,  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. function_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendisse eu tortor. Donec vitae city_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis se eu tortor. Donec vitae felis nec ligula blandit rhoncus."
       snippet = ExcerptFu.new(text)
-      snippet.search("SUBSTRING", :limit => 200, :words => true).should == "SUBSTRING Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu,"
+      snippet.search("SUBSTRING", :limit => 200, :words => true).should == "SUBSTRING Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu,..."
     end
 
     it "should return proper string when set limit with SUBSTRING at end of text" do
       text = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu,  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. function_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendisse eu tortor. Donec vitae city_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis se eu tortor. Donec vitae felis nec ligula blandit rhoncus. SUBSTRING"
       snippet = ExcerptFu.new(text)
-      snippet.search("SUBSTRING", :limit => 200, :words => true).should == "sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis se eu tortor. Donec vitae felis nec ligula blandit rhoncus. SUBSTRING"
+      snippet.search("SUBSTRING", :limit => 200, :words => true).should == "...sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis se eu tortor. Donec vitae felis nec ligula blandit rhoncus. SUBSTRING"
     end
 
     it "should return proper string when set limit with SUBSTRING is near the beginning" do
       text = "Lorem ipsum dolor sit SUBSTRING amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu,  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. function_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendisse eu tortor. Donec vitae city_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis se eu tortor. Donec vitae felis nec ligula blandit rhoncus."
       snippet = ExcerptFu.new(text)
-      snippet.search("SUBSTRING", :limit => 200, :words => true).should == "Lorem ipsum dolor sit SUBSTRING amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu,"
+      snippet.search("SUBSTRING", :limit => 200, :words => true).should == "Lorem ipsum dolor sit SUBSTRING amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu,..."
     end
 
     it "should return proper string when set limit with SUBSTRING is near the end" do
       text = "Lorem ipsum dolor sit  amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu,  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. function_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendisse eu tortor. Donec vitae city_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis se eu tortor. Donec SUBSTRING vitae felis nec ligula blandit rhoncus."
       snippet = ExcerptFu.new(text)
-      snippet.search("SUBSTRING", :limit => 200, :words => true).should == "sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis se eu tortor. Donec SUBSTRING vitae felis nec ligula blandit rhoncus."
+      snippet.search("SUBSTRING", :limit => 200, :words => true).should == "...sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis se eu tortor. Donec SUBSTRING vitae felis nec ligula blandit rhoncus."
     end
 
     it "should return proper string when full words requested and SUBSTRING does not exist" do
       text = "Lorem ipsum dolor sit  amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu,  Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. function_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendisse eu tortor. Donec vitae city_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, quam. Morbi blandit mollis magna. Suspendis se eu tortor. Donec vitae felis nec ligula blandit rhoncus."
       snippet = ExcerptFu.new(text)
-      snippet.search("SUBSTRING", :limit => 200, :words => true).should == "magna. function_label_eur_1 Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Donec risus risus,"
     end
   end
 
@@ -143,23 +141,27 @@ describe "ExcerptFu" do
     describe "prefix" do
       before do
         @text_snippet.stub!(:full_words => true)
+        @text_snippet.stub!( :omission => '' )
       end
 
       it "should return prefix_raw when not using full words" do
         @text_snippet.should_receive(:full_words).and_return(false)
         @text_snippet.should_receive(:prefix_raw).and_return('prefix_raw')
+        
         @text_snippet.send(:prefix).should == 'prefix_raw'
       end
 
       it "should return prefix_raw when using full words but prefix first word is complete" do
         @text_snippet.should_receive(:prefix_first_word_incomplete?).and_return(false)
         @text_snippet.should_receive(:prefix_raw).and_return('prefix_raw')
+        
         @text_snippet.send(:prefix).should == 'prefix_raw'
       end
 
       it "should return prefix_raw with removed first word when using full words and prefix first word is incomplete" do
         @text_snippet.should_receive(:prefix_first_word_incomplete?).and_return(true)
         @text_snippet.should_receive(:prefix_raw).and_return('test prefix_raw')
+
         @text_snippet.send(:prefix).should == 'prefix_raw'
       end
     end
@@ -203,6 +205,7 @@ describe "ExcerptFu" do
     describe "suffix" do
       before do
         @text_snippet.stub!(:full_words => true)
+        @text_snippet.stub!( :omission => '' )
       end
 
       it "should return prefix_raw when not using full words" do

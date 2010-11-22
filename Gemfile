@@ -5,6 +5,6 @@ group :development do
 end
 
 group :test do
-  gem 'rspec'
+  gem 'rspec', '=1.3.1'
   gem 'ZenTest'
 end

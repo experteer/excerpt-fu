@@ -1,6 +1,6 @@
 class ExcerptFu < String
 
-  attr_accessor :substring, :prefix_size, :suffix_size, :full_words, :limit
+  attr_accessor :substring, :prefix_size, :suffix_size, :full_words, :limit, :omission
 
   def self.search(text, substring, options = {})
     new(text).search(substring, options)
@@ -25,11 +25,17 @@ class ExcerptFu < String
     end
 
     def prefix
-      if full_words && prefix_first_word_incomplete?
+      @prefix = if full_words && prefix_first_word_incomplete?
         prefix_raw.gsub(/^(\w+.?){1}/, "").lstrip
       else
         prefix_raw
       end
+      
+      if @prefix && self[0, @prefix.length] != @prefix
+        @prefix = omission + @prefix
+      end
+      
+      @prefix
     end
 
     def prefix_first_word_incomplete?
@@ -45,11 +51,17 @@ class ExcerptFu < String
     end
 
     def suffix
-      if full_words && suffix_last_word_incomplete?
+      @suffix = if full_words && suffix_last_word_incomplete?
         suffix_raw.gsub(/(\w+.?){1}$/, "").rstrip
       else
         suffix_raw
       end
+      
+      if @suffix && self[-@suffix.length, @suffix.length] != @suffix
+        @suffix += omission
+      end
+      
+      @suffix
     end
 
     def suffix_last_word_incomplete?
@@ -69,6 +81,7 @@ class ExcerptFu < String
       @suffix_size = half_of_limit(options) || options[:suffix]
       @full_words = options[:words]
       @limit = options[:limit]
+      @omission = options[:omission] || "..."
     end
 
     def half_of_limit(options)
