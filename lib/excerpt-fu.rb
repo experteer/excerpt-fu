@@ -1,14 +1,13 @@
 class ExcerptFu < String
-
-  attr_accessor :substring, :prefix_size, :suffix_size, :full_words, :limit, :omission
-
+  
   def self.search(text, substring, options = {})
-    new(text).search(substring, options)
+    new( text ).search( substring, options )
   end
 
-  def search(substring, options = {})
+  def search( substring, options = {} )
     @substring = substring
-    extract_options(options)
+    
+    @options = { :omission => '...' }.merge( options )
 
     if include_substring?
       [ prefix, substring, suffix ].join
@@ -18,120 +17,134 @@ class ExcerptFu < String
     end
   end
 
+
   private
-
-    def include_substring?
-      !substring.empty? && self.include?(substring)
-    end
-
-    def prefix
-      @prefix = if full_words && prefix_first_word_incomplete?
-        prefix_raw.gsub(/^(\w+.?){1}/, "").lstrip
-      else
-        prefix_raw
-      end
+  
+  def prefix
+    text = full_text_before_substring
+    
+    # now only cut out the needed chars
+    text = text.split( //u ).reverse[0, prefix_limit].reverse.join
+    
+    # now check whether to handle full words
+    prefix_start_index = self.index( text )
+    if full_words? && 
+      prefix_start_index > 0 && self.split( //u )[ prefix_start_index-1 ] != " "
       
-      if @prefix && self[0, @prefix.length] != @prefix
-        @prefix = omission + @prefix
-      end
+      text = text.sub( /^(\w+.?){1}/u, "" ).lstrip
+    end
+    
+    # apply leading omission if needed
+    if prefix_start_index > 0 && text != self.split( //u )[0, suffix_limit].join
+      text = @options[:omission] + text
+    end
+    
+    text
+  end
+  
+  def suffix
+    text = full_text_after_substring
+    
+    # now only cut out the needed chars
+    text = text.split( //u )[0, suffix_limit].join
+    
+    # now check whether to handle full words
+    reverse_suffix_end_index = -( self.split( //u ).reverse.join.index( text.split( //u ).reverse.join ))
+    if full_words? && 
+      reverse_suffix_end_index < 0 && self.split( //u )[reverse_suffix_end_index] != " "
       
-      @prefix
+      text = text.sub( /(\w+.?){1}$/u, "" ).rstrip
     end
-
-    def prefix_first_word_incomplete?
-      prefix_start > 0 && prefix_str[prefix_start-1] != " "
+    
+    # apply tailing omission if needed
+    if reverse_suffix_end_index < 0 && text != self[-text.split( //u ).length, text.split( //u ).length]
+      text += @options[:omission]
     end
-
-    def prefix_raw
-      if limit && prefix_str.size > prefix_size
-        prefix_str[prefix_start+substring.size/2..-1]
-      else
-        prefix_str[prefix_start..-1]
-      end
+    
+    text
+  end
+  
+  
+  # get everything before the substring or just split in half
+  def full_text_before_substring
+    if include_substring?
+      self.split( @substring )[0] || ""
+    else
+      self.split( //u )[ 0..self.split( //u ).size/2 ].join
     end
-
-    def suffix
-      @suffix = if full_words && suffix_last_word_incomplete?
-        suffix_raw.gsub(/(\w+.?){1}$/, "").rstrip
-      else
-        suffix_raw
-      end
-      
-      if @suffix && self[-@suffix.length, @suffix.length] != @suffix
-        @suffix += omission
-      end
-      
-      @suffix
+  end
+  
+  # get everything after the substring or just split in half
+  def full_text_after_substring
+    if include_substring?
+      self.split( @substring )[1] || ""
+    else
+      self.split( //u )[ self.split( //u ).size/2+1..-1 ].join
     end
-
-    def suffix_last_word_incomplete?
-      suffix_end < suffix_str.size-1 && suffix_str[suffix_end+1] != " "
+  end
+  
+  # the numbder of characters for the prefix
+  def prefix_limit
+    limit = ideal_prefix_limit
+    
+    # extend the limit if the text after the substring is too short
+    unless @options[:prefix] || full_text_after_substring_uses_ideal_suffix_limit?
+      limit += ideal_suffix_limit - full_text_after_substring.split( //u ).size
     end
-
-    def suffix_raw
-      if limit
-        suffix_str[0..suffix_end-substring.size/2]
-      else
-        suffix_str[0..suffix_end]
-      end
+    
+    limit
+  end
+  
+  # the numder of characters for the suffix
+  def suffix_limit
+    limit = ideal_suffix_limit
+    
+    # extend the limit if the text before the substring is too short
+    unless @options[:suffix] || full_text_before_substring_uses_ideal_prefix_limit?
+      limit += ideal_prefix_limit - full_text_before_substring.split( //u ).size
     end
-
-    def extract_options(options)
-      @prefix_size = half_of_limit(options) || options[:prefix]
-      @suffix_size = half_of_limit(options) || options[:suffix]
-      @full_words = options[:words]
-      @limit = options[:limit]
-      @omission = options[:omission] || "..."
+    
+    limit
+  end
+  
+  
+  def ideal_prefix_limit
+    limit = @options[:prefix] || @options[:limit]/2
+    
+    if !@options[:prefix] && include_substring?
+      limit -= @substring.split( //u ).size/2
     end
-
-    def half_of_limit(options)
-      options[:limit] / 2 if options[:limit]
+    
+    limit
+  end
+  
+  def ideal_suffix_limit
+    limit = @options[:suffix] || @options[:limit]/2
+    
+    if !@options[:suffix] && include_substring?
+      limit -= @substring.split( //u ).size/2
     end
-
-    def prefix_start_raw
-      prefix_str.size - prefix_size
-    end
-
-    def prefix_start
-      prefix_start = [prefix_start_raw, 0].max
-
-      if suffix_str.size >= suffix_size
-        prefix_start
-      else
-        prefix_start = prefix_start - (suffix_size - suffix_str.size)
-      end
-
-      [prefix_start, 0].max
-    end
-
-    def suffix_end_raw
-      suffix_size - 1
-    end
-
-    def suffix_end
-      if prefix_start_raw > 0
-        suffix_end_raw
-      else
-        suffix_end_raw - prefix_start_raw
-      end
-    end
-
-    def prefix_str
-      if include_substring?
-        self.split(substring)[0]
-      else
-        self[0..size/2]
-      end
-    end
-
-    def suffix_str
-      if include_substring?
-        self.split(substring)[1] || ""
-      else
-        self[size/2+1..-1]
-      end
-    end
-
+    
+    limit
+  end
+  
+  # returns whether the full_text_after_substring can use the ideal_suffix_limit
+  def full_text_after_substring_uses_ideal_suffix_limit?
+    full_text_after_substring.split( //u ).size >= ideal_suffix_limit
+  end
+  
+  # returns whether the full_text_after_substring can use the ideal_prefix_limit
+  def full_text_before_substring_uses_ideal_prefix_limit?
+    full_text_before_substring.split( //u ).size >= ideal_prefix_limit
+  end
+  
+  
+  def include_substring?
+    !@substring.empty? && self.include?( @substring )
+  end
+  
+  def full_words?; @options[:words]; end
+  
 end
 
 begin
