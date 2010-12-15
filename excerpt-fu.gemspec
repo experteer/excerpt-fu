@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{excerpt-fu}
-  s.version = "0.2.1"
+  s.version = "0.2.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Marcin Michalowski", "Marcin Nowicki"]
-  s.date = %q{2010-12-08}
+  s.date = %q{2010-12-15}
   s.description = %q{Enchanced version for excerpt rails helper with whole word support}
   s.extra_rdoc_files = [
     "LICENSE",
@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
     "excerpt-fu.gemspec",
     "lib/excerpt-fu.rb",
     "spec/excerpt-fu_spec.rb",
+    "spec/performance_spec.rb",
     "spec/spec.opts",
     "spec/spec_helper.rb"
   ]
@@ -35,6 +36,7 @@ Gem::Specification.new do |s|
   s.summary = %q{Enchanced version for excerpt rails helper with whole word support}
   s.test_files = [
     "spec/excerpt-fu_spec.rb",
+    "spec/performance_spec.rb",
     "spec/spec_helper.rb"
   ]
 
