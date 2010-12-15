@@ -107,7 +107,7 @@ describe "ExcerptFu" do
 || se eu tortor. Donec vitae felis nec ligula blandit rhoncus."
       snippet = ExcerptFu.new(text)
       
-      snippet.search("SUBSTRING", :limit => 200, :words => true).should == ".... Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, SUBSTRING Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem..."
+      snippet.search("SUBSTRING", :limit => 200, :words => true).should == "...Aliquam sit amet felis. Etiam congue. Donec risus risus, pretium ac, tincidunt eu, tempor eu, SUBSTRING Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem..."
     end
 
     it "should return proper string when set limit with SUBSTRING at beginning of text" do
@@ -149,7 +149,7 @@ describe "ExcerptFu" do
       text = "Lorem ipsum dolor sit  amet, consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet felis. Etiam congue. Don"
       snippet = ExcerptFu.new(text)
       
-      snippet.search("SUBSTRING", :limit => 100, :omission => '', :words => true).should == "consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit"
+      snippet.search("SUBSTRING", :limit => 100, :omission => '', :words => true).should == "consectetuer adipiscing elit. Vivamus vitae risus vitae lorem iaculis placerat. Aliquam sit amet"
     end
     
     it "should split correctly for multibyte characters" do
