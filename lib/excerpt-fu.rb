@@ -17,20 +17,37 @@ class ExcerptFu < String
     end
   end
 
+  def self.oniguruma?
+    return @@oniguruma if defined? @@oniguruma
+
+    begin
+      require 'oniguruma'
+      @@oniguruma = true
+    rescue LoadError
+      @@oniguruma = false
+    end
+  end
+
 
   private
   
   def prefix
     text = full_text_before_substring
+
+    regex = unless ExcerptFu.oniguruma?
+      Regexp.new( /^(.*?)(\s*?)(.{0,#{prefix_limit}})$/u )
+    else
+      Oniguruma::ORegexp.new( "^(.*?)(\s*?)(.{0,#{prefix_limit}})$", "utf8" )
+    end
     
-    if m = text.match( /^(.*?)(\s*?)(.{0,#{prefix_limit}})$/u )
+    if m = regex.match( text )
       text_before_prefix = !m[1].empty?
       space_before_prefix = !m[2].empty?
       text = m[3] # represents the prefix text
 
       # now check whether to handle full words
       if full_words? && text_before_prefix && !space_before_prefix
-        text.sub!( /^(\w+.?\s*|.?\s*)/u, "" ) # first word with tailing spaces OR just the tailing spaces
+        text.sub!( /^(\w+.?\s*|.?\s*)/iu, "" ) # first word with tailing spaces OR just the tailing spaces
       end
 
       # apply leading omission if needed
@@ -45,7 +62,14 @@ class ExcerptFu < String
   def suffix
     text = full_text_after_substring
 
-    if m = text.match( /^(.{0,#{suffix_limit}})(\s*?)(.*?)$/u )
+
+    regex = unless ExcerptFu.oniguruma?
+      Regexp.new( /^(.{0,#{suffix_limit}})(\s*?)(.*?)$/u )
+    else
+      Oniguruma::ORegexp.new( "^(.{0,#{suffix_limit}})(\s*?)(.*?)$", "utf8" )
+    end
+    
+    if m = regex.match( text )
       text = m[1] # represents the suffix text
       space_after_suffix = !m[2].empty?
       text_after_suffix = !m[3].empty?
